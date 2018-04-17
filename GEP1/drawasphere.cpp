@@ -10,20 +10,20 @@ drawasphere::drawasphere()
 
 drawasphere::drawasphere(float r, float g, float b, float translatex, float translatey, float translatez, float radius, float spd,string name)
 {//constructor
-	color[0] = r;
+	color[0] = r; //store colors
 	color[1] = g;
 	color[2] = b;
-	position[0] = translatex;
+	position[0] = translatex;// store positions
 	position[1] = translatey;
 	position[2] = translatez;
 	speed = spd;
-	yidui = name;
+	yidui = name;// name(label) of sphere
 	namea = &yidui[0];
-	yiduipos = yidui + "pos";
-	yiduicolor = yidui + "color";
-	yiduisize = yidui + "radius";
-	radi = radius;
-	nameapos = &yiduipos[0];
+	yiduipos = yidui + "pos";// create & store NAME(LABEL) of sphere position
+	yiduicolor = yidui + "color";//create & store NAME(LABEL) of sphere color
+	yiduisize = yidui + "size";//create & store NAME(LABEL) of sphere size
+	radi = radius;//radius of sphere
+	nameapos = &yiduipos[0];//make the pointer points to strings(where names(labels) are stored), cuz Imgui requires address of char array as labels
 	nameacolor = &yiduicolor[0];
 	nameasize = &yiduisize[0];
 
@@ -32,19 +32,19 @@ drawasphere::drawasphere(float r, float g, float b, float translatex, float tran
 }
 char * drawasphere::getstring()
 {
-	return namea;
+	return namea;// return label of sphere
 }
 char * drawasphere::getstringpos()
 {
-	return nameapos;
+	return nameapos;// return label of sphere pos
 }
 char * drawasphere::getstringcolor()
 {
-	return nameacolor;
+	return nameacolor;// return label of sphere color
 }
 char * drawasphere::getstringsize()
 {
-	return nameasize;
+	return nameasize;// return label of sphere size
 }
 void drawasphere::draw()
 {
@@ -65,19 +65,19 @@ float* drawasphere::getpos()
 
 float * drawasphere::getcolor()
 {
-	return color;
+	return color;//return color
 }
 
 float * drawasphere::getsize()
 {
-	return &radi;
+	return &radi;//return radius pointer
 }
 
 
 
 float drawasphere::getradius()
 {
-	return radi;//return radius
+	return radi;//return radius, abandoned function
 }
 
 

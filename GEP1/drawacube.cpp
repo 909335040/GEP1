@@ -9,43 +9,43 @@ drawacube::drawacube()
 
 drawacube::drawacube(float r, float g, float b, float translatex, float translatey, float translatez, float size, float spd,string name)
 {
-	color[0] = r;
+	color[0] = r;//store colors
 	color[1] = g;
 	color[2] = b;
-	position[0] = translatex;
+	position[0] = translatex; // store positions
 	position[1] = translatey;
 	position[2] = translatez;
-	speed = spd;
-	yidui = name;
-	yiduipos = yidui + "pos";
-	yiduicolor = yidui + "color";
-	yiduisize = yidui + "size";
-	siz = size;
-	namea = &yidui[0];
-	nameapos = &yiduipos[0];
-	nameacolor = &yiduicolor[0];
-	nameasize = &yiduisize[0];
+	speed = spd;// abanadoned value, used to represent speed
+	yidui = name; // name(label) of cube
+	yiduipos = yidui + "pos";// create & store NAME(LABEL) of cube position
+	yiduicolor = yidui + "color";//create & store NAME(LABEL) of cube color
+	yiduisize = yidui + "size";//create & store NAME(LABEL) of cube size
+	siz = size; //size of cube
+	namea = &yidui[0]; //make the pointer points to strings(where names(labels) are stored), cuz Imgui requires address of char array as labels
+	nameapos = &yiduipos[0]; 
+	nameacolor = &yiduicolor[0]; 
+	nameasize = &yiduisize[0]; 
 
 }
 
  char *drawacube::getstring()
 {
-	return namea;
+	return namea; // return label of cube
 }
 
  char * drawacube::getstringpos()
  {
-	 return  nameapos;
+	 return  nameapos;// return label of cube pos
  }
 
  char * drawacube::getstringcolor()
  {
-	 return nameacolor;
+	 return nameacolor;//// return label of cube color
  }
 
  char * drawacube::getstringsize()
  {
-	 return nameasize;
+	 return nameasize;//// return label of cube size
  }
 
 void drawacube::draw()
@@ -62,19 +62,19 @@ void drawacube::draw()
 
 float *drawacube::getpos()
 {
-	return position;
+	return position;//returning float pointer of position array
 }
 
 float * drawacube::getcolor()
 {
-	return color;
+	return color;//returning float pointer of color array
 }
 
  
 
 float *drawacube::getsize()
 {
-	return &siz;
+	return &siz;//returning float pointer of size
 }
 
 
