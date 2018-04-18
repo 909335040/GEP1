@@ -63,9 +63,16 @@ bool show_another_window = true;
 bool show_qgui = true;
 //choice for tabs in gui
 int tabb = 1;
+int statea=0;
 void Window::InitRender() { 
 	glEnable(GL_DEPTH_TEST);
 }
+void Window::savestate(int a)
+{
+	statea = a;
+ 
+}
+
 void Window:: cleanup() {
 	delete _model;
 }
@@ -479,7 +486,7 @@ void Window::Draw_Floor() {
 }
 
 void Window::update() {
- 
+	 
 	 if (GetAsyncKeyState(dbgdkey)&0x8000 &&dbgrls>0) {
 	
 		//key f7 as the key to toggle debug draw on/off
@@ -495,26 +502,26 @@ void Window::update() {
 	//Advance the animation
 	if (_model != NULL) {
 
-		if (GetAsyncKeyState(lft)) { //if keys(wasd) pressed, change following rotation and position
+		if (GetAsyncKeyState(lft)||statea==3) { //if keys(wasd) pressed, change following rotation and position
 			_model->advance(.015f); // for playing for animation, controls time value in md2model(controls the play of animation...i didn't look in to how is it done originally was .025f, slowed it for a bit)
 			modpos[0] -= 0.1f;//move position(to left by 0.1f)
 			modrot = 90.0f; //x rotation value
 		 
 		}
-		else if (GetAsyncKeyState(rgt)) { // right
+		else if (GetAsyncKeyState(rgt)||statea==4) { // right
 			_model->advance(.015f);
 			modpos[0] += 0.1f;
 			modrot = -90.0f;
  
 
 		}
-		else if (GetAsyncKeyState(frt)) {//s, backwards
+		else if (GetAsyncKeyState(frt)||statea==2) {//s, backwards
 			_model->advance(.015f);
 			modpos[2] += 0.1f;
 			modrot = 0.0f;
 	 
 		}
-		else if (GetAsyncKeyState(bac)) {//w, forward
+		else if (GetAsyncKeyState(bac)||statea==1) {//w, forward
 			_model->advance(.015f);
 			modpos[2] -= 0.1f;
 			modrot = 180.0f;	 

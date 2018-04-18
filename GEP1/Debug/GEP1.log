@@ -1,27 +1,4 @@
-﻿  drawacube.cpp
-d:\cube map demo\gep1\gep1\drawacube.cpp(2): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-  drawaline.cpp
-  drawasphere.cpp
-  drawaspot.cpp
-  imageloader.cpp
-  imgui.cpp
-  imgui_demo.cpp
-  imgui_draw.cpp
-  imgui_impl_glut.cpp
-  main.cpp
-d:\cube map demo\gep1\gep1\main.cpp(105): warning C4018: '<': signed/unsigned mismatch
-  md2model.cpp
-  QuestManager.cpp
-d:\cube map demo\gep1\gep1\questmanager.cpp(88): warning C4553: '==': operator has no effect; did you intend '='?
-  vec3f.cpp
-  window.cpp
-d:\cube map demo\gep1\gep1\window.cpp(189): warning C4018: '<': signed/unsigned mismatch
-d:\cube map demo\gep1\gep1\window.cpp(209): warning C4018: '<': signed/unsigned mismatch
-d:\cube map demo\gep1\gep1\window.cpp(229): warning C4018: '<': signed/unsigned mismatch
-d:\cube map demo\gep1\gep1\window.cpp(249): warning C4018: '<': signed/unsigned mismatch
-d:\cube map demo\gep1\gep1\window.cpp(405): warning C4018: '<': signed/unsigned mismatch
-d:\cube map demo\gep1\gep1\window.cpp(406): warning C4018: '<': signed/unsigned mismatch
-d:\cube map demo\gep1\gep1\window.cpp(407): warning C4018: '<': signed/unsigned mismatch
-d:\cube map demo\gep1\gep1\window.cpp(408): warning C4018: '<': signed/unsigned mismatch
-  Generating Code...
-  GEP1.vcxproj -> D:\Cube Map Demo\GEP1\Debug\GEP1.exe
+﻿  main.cpp
+d:\users\user\documents\github\gep1\gep1\main.cpp(101): warning C4154: deletion of an array expression; conversion to pointer supplied
+d:\users\user\documents\github\gep1\gep1\main.cpp(189): warning C4018: '<': signed/unsigned mismatch
+  GEP1.vcxproj -> D:\Users\User\Documents\GitHub\GEP1\Debug\GEP1.exe

@@ -1,3 +1,10 @@
+
+#pragma comment(lib,"ws2_32.lib")
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#include<WinSock2.h>
+ 
+ 
+
 # include "window.h"
  
 #include <vector>
@@ -17,6 +24,83 @@ bool releaseflag = false;//release flag for the recording key(f1),to prevent it 
 bool donereleaseflag = false;// another release flag still for f1, to prevent it from repeating over and over again(record stop record stop record stop while pressing the key)
 Window window; 
 
+SOCKET connection;
+int g = 0;
+int state = 0;
+int passstate() {
+
+	return state;
+
+}
+int movemod(){
+	 while (true){
+	 
+
+
+		 window.savestate(state);
+
+
+	 }
+
+		return 0;
+ 
+
+
+}
+int clientthread() {
+
+
+
+
+
+	char buffer[256];
+	while (true) {
+		cout << state << endl;
+
+
+		char charr = recv(connection, buffer, sizeof(buffer), NULL);
+		if (charr == SOCKET_ERROR) {
+
+			state = 0;
+			return -1;
+		}
+		string str = buffer;
+		if (str == "W") {
+			cout << buffer;
+			state = 1;
+
+
+		}
+		else if (str == "S") {
+			cout << buffer;
+			state = 2;
+
+		}
+		else if (str == "A") {
+			cout << buffer;
+			state = 3;
+
+		}
+		else if (str == "D") {
+			cout << buffer;
+			state = 4;
+
+		}
+		else if (str == "none") {
+			cout << buffer;
+
+
+
+			state = 0;
+
+		}
+
+	}
+
+
+	delete[]buffer;
+	return state;
+}
 void record(int kfrcd) {   //the parameter is the keycode of the key for recording(supposed to be DWORD but i tested that int works fine without warnings while float doesn't,so int it is),for now its just hardcoded to 0x70 which is f1
 
 	if (event.size() <= 0 && releaseflag == false) {// if the f1 key havent been released its not recording
@@ -209,12 +293,44 @@ void gancheck() {
 	}
 
 }
+int lingyigethread() {
+	WSAData wsadata;
+	WORD dllversion = MAKEWORD(2, 1);
+	if (WSAStartup(dllversion, &wsadata) != 0) {
 
+		MessageBoxA(NULL, "winsockstartupfaled", "error", MB_OK | MB_ICONERROR);
+
+	}
+	SOCKADDR_IN addr;
+	int addrlen = sizeof(addr);
+	addr.sin_addr.s_addr = inet_addr("172.20.82.2");
+	addr.sin_port = htons(1111);
+	addr.sin_family = AF_INET;
+
+
+	connection = socket(AF_INET, SOCK_STREAM, NULL);
+	if (connect(connection, (SOCKADDR*)&addr, addrlen) != 0) {
+
+		MessageBoxA(NULL, "buxing", "ERROR", MB_OK | MB_ICONERROR);
+		return 0;
+
+
+
+
+
+	}
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)clientthread, NULL, NULL, NULL);
+	return 0;
+}
+
+ 
 int main(int argc, char** argv) {
 	thread t(gancheck); // in thread so not contradicting with the game loop of opengl
+	thread t2(movemod);
+	thread t1(lingyigethread);
 
 	window.Create_Window(argc,argv); 
-
+	 
 
 	return 0;
 }

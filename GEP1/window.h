@@ -21,6 +21,8 @@ class Window {
 
 	
 public:
+	static void savestate(int a);
+	 
 	static void cleanup();
 	static void drawgui();
 	static void storeVariables();
@@ -39,6 +41,6 @@ public:
  
 	static void InitRender();
  
-
+ 
 
 };
