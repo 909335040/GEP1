@@ -12,6 +12,9 @@
 #endif
 
 #include "vec3f.h"
+# include<iostream>
+# include<algorithm>
+# include<cmath>
 
 struct MD2Vertex {
 	Vec3f pos;
@@ -71,6 +74,19 @@ public:
 };
 
 
+//bounding box
+
+static int arry_y[100000];		//array of all y co-ord vertices value
+static int arry_x[100000];		//array of all x co-ord vertices value
+static int arry_z[100000];		//array of all z co-ord vertices value
+
+static int ymaxy;				//max of y from the array arry_y
+static int xmaxx;				//max of x from the array arry_x
+static int zmaxz;				//max of z from the array arry_z
+
+static int yminy;				//min of y from the array arry_y
+static int xminx;				//min of x from the array arry_x
+static int zminz;				//min of z from the array arry_z
 
 
 

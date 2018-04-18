@@ -390,6 +390,11 @@ MD2Model* MD2Model::load(const char* filename) {
 			vertex->pos = translation + Vec3f(scale[0] * v[0],
 				scale[1] * v[1],
 				scale[2] * v[2]);
+
+			arry_x[j] = (int)(translation[0] + (scale[0] * v[0]));
+			arry_y[j] = (int)(translation[1] + (scale[1] * v[1]));
+			arry_z[j] = (int)(translation[2] + (scale[2] * v[2]));
+
 			input.read(buffer, 1);
 			int normalIndex = (int)((unsigned char)buffer[0]);
 			vertex->normal = Vec3f(NORMALS[3 * normalIndex],
@@ -397,6 +402,17 @@ MD2Model* MD2Model::load(const char* filename) {
 				NORMALS[3 * normalIndex + 2]);
 		}
 	}
+
+	ymaxy = *std::max_element(std::begin(arry_y), std::end(arry_y));
+	yminy = *std::min_element(std::begin(arry_y), std::end(arry_y));
+
+
+	xmaxx = *std::max_element(std::begin(arry_x), std::end(arry_x));
+	xminx = *std::min_element(std::begin(arry_x), std::end(arry_x));
+
+
+	zmaxz = *std::max_element(std::begin(arry_z), std::end(arry_z));
+	zminz = *std::min_element(std::begin(arry_z), std::end(arry_z));
 
 	model->startFrame = 0;
 	model->endFrame = numFrames - 1;
@@ -502,6 +518,62 @@ void MD2Model::draw() {
 			glVertex3f(pos[0], pos[1], pos[2]);
 		}
 	}
+	glEnd();
+
+	//bounding box
+	glBegin(GL_QUADS);
+	//1:xminx,yminy,zminz
+	//2:xminx,ymaxy,zminz
+	//3:xmaxx,ymaxy,zminz
+	//4:xmaxx,yminy,zminz
+	//5:xminx,yminy,zmaxz
+	//6:xmaxx,yminy,zmaxz
+	//7:xmaxx,ymaxy,zmaxz
+	//8:xminx,ymaxy,zmaxz
+
+
+	//1234 , 1285, 3746, 5678, 2387, 1456
+	//1
+
+	glVertex3i(xminx, yminy, zminz);
+	glVertex3i(xminx, ymaxy, zminz);
+	glVertex3i(xmaxx, ymaxy, zminz);
+	glVertex3i(xmaxx, yminy, zminz);
+
+	//2
+
+	glVertex3i(xminx, yminy, zminz);
+	glVertex3i(xminx, ymaxy, zminz);
+	glVertex3i(xminx, ymaxy, zmaxz);
+	glVertex3i(xminx, yminy, zmaxz);
+	//3
+	glVertex3i(xmaxx, ymaxy, zminz);
+	glVertex3i(xmaxx, ymaxy, zmaxz);
+	glVertex3i(xmaxx, yminy, zminz);
+	glVertex3i(xmaxx, yminy, zmaxz);
+	//4
+	glVertex3i(xminx, yminy, zmaxz);
+	glVertex3i(xmaxx, yminy, zmaxz);
+	glVertex3i(xmaxx, ymaxy, zmaxz);
+	glVertex3i(xminx, ymaxy, zmaxz);
+	//5
+	glVertex3i(xminx, ymaxy, zminz);
+	glVertex3i(xmaxx, ymaxy, zminz);
+	glVertex3i(xminx, ymaxy, zmaxz);
+	glVertex3i(xmaxx, ymaxy, zmaxz);
+
+	//6
+	glVertex3i(xminx, yminy, zminz);
+	glVertex3i(xmaxx, yminy, zminz);
+	glVertex3i(xminx, yminy, zmaxz);
+	glVertex3i(xmaxx, yminy, zmaxz);
+
+	/*glVertex2i(0, 0);
+	glVertex2i(xmaxx, 0);
+	glVertex2i(xmaxx, ymaxy);
+	glVertex2i(0, ymaxy);*/
+
+
 	glEnd();
 
 }
