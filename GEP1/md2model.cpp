@@ -549,17 +549,17 @@ void MD2Model::draw() {
 	//3
 	glVertex3i(xmaxx, ymaxy, zminz);
 	glVertex3i(xmaxx, ymaxy, zmaxz);
-	glVertex3i(xmaxx, yminy, zminz);
+	glVertex3i(xmaxx,yminy, zminz);
 	glVertex3i(xmaxx, yminy, zmaxz);
 	//4
-	glVertex3i(xminx, yminy, zmaxz);
+	glVertex3i(xminx,yminy, zmaxz);
 	glVertex3i(xmaxx, yminy, zmaxz);
 	glVertex3i(xmaxx, ymaxy, zmaxz);
 	glVertex3i(xminx, ymaxy, zmaxz);
 	//5
 	glVertex3i(xminx, ymaxy, zminz);
-	glVertex3i(xmaxx, ymaxy, zminz);
-	glVertex3i(xminx, ymaxy, zmaxz);
+	glVertex3i(xmaxx,ymaxy, zminz);
+	glVertex3i(xminx, ymaxy,zmaxz);
 	glVertex3i(xmaxx, ymaxy, zmaxz);
 
 	//6
@@ -580,9 +580,29 @@ void MD2Model::draw() {
 
 
 
+int getxminx()
+{
+	//returns xmin value
+	return xminx;
+}
 
+int getxmaxx() {
+	return xmaxx;
+}
 
+int getyminy() {
+	return yminy;
+}
 
+int getymaxy() {
+	return ymaxy;
+}
 
+int getzminz() {
+	return zminz;
+}
 
+int getzmaxz() {
 
+	return zmaxz;
+}

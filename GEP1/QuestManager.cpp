@@ -1,12 +1,17 @@
 # include "QuestManager.h"
+# include "window.h"
+
 
 
 bool QuestManager::KeyBoardFunction(unsigned char key, int x, int y) {
 
 	ImGuiIO& io = ImGui::GetIO();
 
+	
 
 	io.AddInputCharacter(key);
+
+	
 
 	if (key == 'z') {
 		
@@ -14,6 +19,9 @@ bool QuestManager::KeyBoardFunction(unsigned char key, int x, int y) {
 		z = true;
 	}
 
+	if (key == 'b') {
+		printf("\nValue of xmin is: %f",getxminxx());
+	}
 	if (key == 'j') {
 
 		j = true;

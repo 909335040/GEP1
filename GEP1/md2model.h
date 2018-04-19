@@ -59,6 +59,8 @@ private:
 public:
 	~MD2Model();
 
+
+
 	//Switches to the given animation
 	void setAnimation(const char* name);
 	//Advances the position in the current animation.  The entire animation
@@ -71,25 +73,32 @@ public:
 	//Loads an MD2Model from the specified file.  Returns NULL if there was
 	//an error loading it.
 	static MD2Model* load(const char* filename);
+	
 };
+
+
 
 
 //bounding box
 
-static int arry_y[100000];		//array of all y co-ord vertices value
-static int arry_x[100000];		//array of all x co-ord vertices value
-static int arry_z[100000];		//array of all z co-ord vertices value
+static  int arry_y[100000];		//array of all y co-ord vertices value
+static   int arry_x[100000];		//array of all x co-ord vertices value
+static   int arry_z[100000];		//array of all z co-ord vertices value
 
-static int ymaxy;				//max of y from the array arry_y
-static int xmaxx;				//max of x from the array arry_x
-static int zmaxz;				//max of z from the array arry_z
+static  int ymaxy;				//max of y from the array arry_y
+static  int xmaxx;				//max of x from the array arry_x
+static  int zmaxz;				//max of z from the array arry_z
 
-static int yminy;				//min of y from the array arry_y
-static int xminx;				//min of x from the array arry_x
+static  int yminy;				//min of y from the array arry_y
+static  int xminx;				//min of x from the array arry_x
 static int zminz;				//min of z from the array arry_z
 
-
-
+int getxminx();
+int getxmaxx();
+int getyminy();
+int getymaxy();
+int getzminz();
+int getzmaxz();
 
 
 

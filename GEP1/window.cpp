@@ -51,7 +51,7 @@ int lft = 0x41;
 int rgt = 0x44;
 int  frt = 0x53;
 int bac = 0x57;
-  // z pos of model
+  
 float modpos[3] = { 0,4.5f,-80.0f };
 float modrot = 0;  // rotationX of model
 float stateposx;  //store modposx at start of recording
@@ -64,6 +64,18 @@ bool show_qgui = true;
 //choice for tabs in gui
 int tabb = 1;
 int statea=0;
+
+
+//variables for bounding box
+/*static int xminxx;
+static int xmaxxx;
+static int yminyy;
+static int ymaxyy;
+static int zminzz;
+static int zmaxzz;*/
+
+
+
 void Window::InitRender() { 
 	glEnable(GL_DEPTH_TEST);
 }
@@ -88,6 +100,8 @@ bool keyboardEvent(unsigned char nChar, int nX, int nY)
 		io.Dpv();
 	 
 	}
+
+	
 	if (nChar == 27) //Esc-key
 		glutLeaveMainLoop();
 	
@@ -375,10 +389,21 @@ void Window::initRendering() {
 	_model = MD2Model::load("tallguy.md2");
 	if (_model != NULL) {
 		_model->setAnimation("run");
+
+		xminxx = getxminx();
+
+		xmaxxx = getxmaxx();
+		yminyy = getyminy();
+		ymaxyy = getymaxy();
+		zminzz = getzminz();
+		zmaxzz = getzmaxz();
+		
 	}
  
 	//Renders the floor(a sample grass image with certain values for width)
 	//Draw_Floor();
+
+	
 
 }
  
@@ -425,7 +450,6 @@ void Window::drawScene() {
 	ImGuiIO&io = ImGui::GetIO();
 
 
- 
  
 	//Draw the guy
 	if (_model != NULL) {
@@ -502,15 +526,21 @@ void Window::update() {
 	//Advance the animation
 	if (_model != NULL) {
 
+		
+
 		if (GetAsyncKeyState(lft)||statea==3) { //if keys(wasd) pressed, change following rotation and position
 			_model->advance(.015f); // for playing for animation, controls time value in md2model(controls the play of animation...i didn't look in to how is it done originally was .025f, slowed it for a bit)
 			modpos[0] -= 0.1f;//move position(to left by 0.1f)
+			xminxx -= 0.1f;
+			xmaxxx -= 0.1f;
 			modrot = 90.0f; //x rotation value
 		 
 		}
 		else if (GetAsyncKeyState(rgt)||statea==4) { // right
 			_model->advance(.015f);
 			modpos[0] += 0.1f;
+			xminxx += 0.1f;
+			xmaxxx += 0.1f;
 			modrot = -90.0f;
  
 
@@ -518,12 +548,16 @@ void Window::update() {
 		else if (GetAsyncKeyState(frt)||statea==2) {//s, backwards
 			_model->advance(.015f);
 			modpos[2] += 0.1f;
+			zminzz += 0.1f;
+			zmaxzz += 0.1f;
 			modrot = 0.0f;
 	 
 		}
 		else if (GetAsyncKeyState(bac)||statea==1) {//w, forward
 			_model->advance(.015f);
 			modpos[2] -= 0.1f;
+			zminzz -= 0.1f;
+			zmaxzz -= 0.1f;
 			modrot = 180.0f;	 
 		}
 		else  {
@@ -535,6 +569,7 @@ void Window::update() {
 	p += .5f;  //rotation value change for sphere on left
 	p2 -= 0.8f;//rotation value change for sphere on right
 	p3 += .8f;//rotation value change for cube
+
 
 	glutPostRedisplay();
  
@@ -567,3 +602,29 @@ void Window::Create_Window(int argv, char** argc ) {
 	glutMainLoop();
 	
 }
+
+
+float getxminxx() {
+	return xminxx;
+}
+
+float getxmaxxx() {
+	return xmaxxx;
+}
+
+float getyminyy() {
+	return yminyy;
+}
+
+float getymaxyy() {
+	return ymaxyy;
+}
+
+float getzminzz() {
+	return zminzz;
+}
+
+float getzmaxzz() {
+	return zmaxzz;
+}
+

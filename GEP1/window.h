@@ -44,3 +44,18 @@ public:
  
 
 };
+
+static float xminxx;
+static float xmaxxx;
+static float yminyy;
+static float ymaxyy;
+static float zminzz;
+static float zmaxzz;
+
+float getxminxx();
+float getxmaxxx();
+float getyminyy();
+float getymaxyy();
+float getzminzz();
+float getzmaxzz();
+
