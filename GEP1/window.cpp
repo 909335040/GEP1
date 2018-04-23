@@ -1,11 +1,11 @@
 ﻿# include "window.h"
-#include "drawasphere.h"
-#include "drawacube.h"
+#include "drawSphere.h"
+#include "drawCube.h"
 #include <vector>
-#include "drawaline.h"
+#include "drawLine.h"
 #include "imgui.h"
 #include "imgui_impl_glut.h"
-#include "drawaspot.h"
+#include "drawSpot.h"
 #include <thread>
 #include"glm\glm.hpp"
 # include "QuestManager.h"
@@ -15,56 +15,55 @@
 # include "imconfig.h"
 GLuint VBO;
 using namespace std;
-int adspheresize=0;
-int adcubesize = 0;
-int adlinesize = 0;
-int adspotsize = 0;
-string string1 = "addsphere";
-string string11 = "scolor";
-string string12 = "spos";
-string string2 = "addcube";
-string string3 = "addline";
-string string4 = "addspot";
-drawacube * cb;
-drawasphere *a1;
-drawaline *ln;
-drawaspot *spt;
+int buttonAddedSphereCount=0;   //numbers of spheres added through buttons
+int buttonAddedCubeCount = 0; // numbers of cubes added through buttons
+int buttonAddedLineCount = 0; // numbers of lines added through buttons
+int buttonAddedSpotCount = 0; // numbers of spots added through buttons
+string sphereLabelGeneral = "addsphere";  //names(without index) for shapes added through buttons
+string cubeLabelGeneral = "addcube";
+string lineLabelGeneral = "addline";
+string spotLabelGeneral = "addspot";
+drawCube * cb;// a few debug draw shapes with pre-set values
+drawSphere *a;  
+drawSphere *a1;
+drawLine *ln;
+drawSpot *spt;
 MD2Model* _model;
 int _textureId;
 const float FLOOR_TEXTURE_SIZE = 20.0f; //The size of each floor "tile"
 //QuestGUI qgui;
 QuestManager qm;
 float _guyPos = 0;
-int sizea = 3;
-vector<drawasphere*> spheres;
-vector<drawacube*> cubes;
-vector <drawaspot*> spots;
-vector < drawaline*>lines;
-float debug = 1;//flag if true go through debug  else not 
-float dbgrls = 1;  //flag  for detecting the release of the key that toggles on/off debug draw(otherwise its going back and forth til key released)
+ 
+vector<drawSphere*> spheres;//vectors of shapes, all debug draw shapes are stored in these vectors
+vector<drawCube*> cubes;
+vector <drawSpot*> spots;
+vector < drawLine*>lines;
+float debugFlag = 1;//Flag if true go through debug  else not 
+float debugKeyRelease = 1;  //Flag  for detecting the release of the key that toggles on/off debug draw(otherwise its going back and forth til key released)
 int dbgdkey = 0x76;//f7 key used for switch on/off debug
 
-float p = 0;  //variables for cube/spheres rotation
+float p = 0;  //variables for cube/spheres rotation(currently abandoned)
 float p2 = 0;
 float p3 = 0;
-int lft = 0x41;
-int rgt = 0x44;
-int  frt = 0x53;
-int bac = 0x57;
+
+int aKey = 0x41;//virtual key codes for keys controls movements 
+int dKey = 0x44;
+int  wKey = 0x53;
+int sKey = 0x57;
   
-float modpos[3] = { 0,4.5f,-80.0f };
-float modrot = 0;  // rotationX of model
-float stateposx;  //store modposx at start of recording
-float stateposz;  //store modposz at start of recording
-float staterot;   //store modrot at start of recording 
-drawasphere *a; // a sphere
+float modelPosition[3] = { 0,4.5f,-80.0f };//model default position
+float modelRotation = 0;  // rotationX of model
+float startPosX;  //store modelPositionx at start of recording
+float startPosZ;  //store modelPositionz at start of recording
+float startRotation;   //store modelRotation at start of recording 
+
 bool show_test_window = true;
 bool show_another_window = true;
 bool show_qgui = true;
 //choice for tabs in gui
-int tabb = 1;
-int statea=0;
-
+ 
+int stateOfModelMovement=0; //state/Flag variable that will cause the model move
 
 //variables for bounding box
 /*static int xminxx;
@@ -79,15 +78,40 @@ static int zmaxzz;*/
 void Window::InitRender() { 
 	glEnable(GL_DEPTH_TEST);
 }
-void Window::savestate(int a)
+Window::~Window()
+{ //clear memory
+ 
+	delete _model;
+
+	for (size_t i = 0; i < cubes.size(); i++) {
+		delete cubes.at(i);
+	}
+	for (size_t i = 0; i < spheres.size(); i++) {
+		delete spheres.at(i);
+	}
+	for (size_t i = 0; i < lines.size(); i++) {
+		delete lines.at(i);
+	}
+	for (size_t i = 0; i < spots.size(); i++) {
+		delete spots.at(i);
+	}
+
+	spots.clear();
+	lines.clear();
+	spheres.clear();
+	cubes.clear();
+}
+void Window::saveState(int a)
 {
-	statea = a;
+	stateOfModelMovement = a;// statea variable to the state
  
 }
 
-void Window:: cleanup() {
+void Window:: cleanUp() {
 	delete _model;
 }
+
+//***************************All Input Functions for IMGUI are from https://github.com/bitxue/imgui   //
 bool keyboardEvent(unsigned char nChar, int nX, int nY)
 {
 	ImGuiIO& io = ImGui::GetIO();
@@ -96,7 +120,7 @@ bool keyboardEvent(unsigned char nChar, int nX, int nY)
 	io.AddInputCharacter(nChar);
 	
 	if (nChar == 8) {
-		cout << "nmsl";
+	 
 		io.Dpv();
 	 
 	}
@@ -176,9 +200,13 @@ void mouseMoveCallback(int x, int y)
 
 	glutPostRedisplay();
 }
-void Window::drawgui()
+
+
+// above all imgui input function from git are over.
+
+void Window::drawGui()
 {
-	ImGui_ImplGLUT_NewFrame(1600, 900);
+	ImGui_ImplGLUT_NewFrame(1600, 900); // resolution of imgui window should be same with the glut window size or else the input will not be accurate
 
 	
 	
@@ -191,142 +219,149 @@ void Window::drawgui()
 
 		{
 			
-			
-			static float f = 0.0f;
+			 
 
-			ImGui::Begin("Debug Draw", &show_another_window);
-			ImGui::SetWindowSize(ImVec2(600, 400));
+			ImGui::Begin("Debug Draw", &show_another_window);//begin this window, show another window is a bool value, when this value is true its showing this window, when its false the window hides
+			ImGui::SetWindowSize(ImVec2(600, 400));//hardcoded window size
 			
 
 			
-				ImGui::Text("                          DebugDraws");
-				ImGui::Text("========================================================");
+				ImGui::Text("                          DebugDraws");                   //some hardcoded text to make the context in window look neat
+				ImGui::Text("========================================================"); 
+				ImGui::Text("      Xpos                Ypos                Zpos"); 
+				ImGui::InputFloat3("modelPosition", modelPosition);//create blanks to change the model position, modelpos is the hardcoded label, modelposition is the array that storing the models position
 				ImGui::Text("      Xpos                Ypos                Zpos");
-				ImGui::InputFloat3("modelpos", modpos);
+				ImGui::InputFloat("modelRotation", &modelRotation);
+				ImGui::Text("========================================================");//some hardcoded text to make the context in window look neat
+				ImGui::Text("========================================================");
+				ImGui::NewLine();//3 lines of nothing(white spaces) before going to next set of shapes
+				ImGui::NewLine();
+				ImGui::NewLine();
+				ImGui::Text("                          Cubes");  //some hardcoded text to make the context in window look neat
+				ImGui::Text("========================================================");   
+				ImGui::Text("========================================================");   
+				for (size_t i = 0; i < cubes.size(); i++) {//looping through the cubes array
+					ImGui::Text("                         "); //hardcoded spaces before the name of cube, to make it look neat
+					ImGui::SameLine();//to make whatever context after the previous ones(hardcoded spaces) displayed on the same line with the previous text
+					ImGui::Text(cubes.at(i)->getLabel());// label/name of cubes
+					ImGui::Text("      Xpos                Ypos                Zpos"); //some hardcoded text to make the context in window look neat
+					ImGui::InputFloat3(cubes.at(i)->getPosLabel(), cubes.at(i)->getPosition());//create blanks to change the position of cubes,labels are "cubename+index+pos", array are from the classes, was storing the cube positions
+					ImGui::Text("      Red                 Green               Blue"); //some hardcoded text to make the context in window look neat
+					ImGui::InputFloat3(cubes.at(i)->getColorLabel(), cubes.at(i)->getColor());;//create blanks to change the position of cubes,labels are "cubename+index+color", array are from the classes, was storing the cube colors
+					ImGui::Text("                          Size "); //some hardcoded text to make the context in window look neat
+					ImGui::InputFloat(cubes.at(i)->getSizeLabel(), cubes.at(i)->getSize());;//create blanks to change the position of cubes,labels are "cubename+index+size", input value are from the class, was storing the cubes size
 
-				ImGui::Text("                          Cubes");
+					ImGui::Text("========================================================");//some hardcoded text to make the context in window look neat
+					ImGui::Text("========================================================"); 
+				}
+
+				ImGui::NewLine();//3 lines of nothing(white spaces) before going to next set of shapes
+				ImGui::NewLine();
+				ImGui::NewLine();
+				ImGui::Text("                          Spheres"); //some hardcoded text to make the context in window look neat,big seperatation from previous shapes
 				ImGui::Text("========================================================");
 				ImGui::Text("========================================================");
-				for (int i = 0; i < cubes.size(); i++) {
-					ImGui::Text("                         "); ImGui::SameLine();
-					ImGui::Text(cubes.at(i)->getstring());
-					ImGui::Text("      Xpos                Ypos                Zpos");
-					ImGui::InputFloat3(cubes.at(i)->getstringpos(), cubes.at(i)->getpos());
-					ImGui::Text("      Red                 Green               Blue");
-					ImGui::InputFloat3(cubes.at(i)->getstringcolor(), cubes.at(i)->getcolor());
-					ImGui::Text("                          Size ");
-					ImGui::InputFloat(cubes.at(i)->getstringsize(), cubes.at(i)->getsize());
+				for (size_t i = 0; i < spheres.size(); i++) {
+					ImGui::Text("                         "); //hardcoded spaces before the name of sphere, to make it look neat
+					ImGui::SameLine();//to make whatever context after the previous ones(hardcoded spaces) displayed on the same line with the previous text
+					ImGui::Text(spheres.at(i)->getLabel());// label/name of spheres
+					ImGui::Text("      Xpos                Ypos                Zpos"); //some hardcoded text to make the context in window look neat
+					ImGui::InputFloat3(spheres.at(i)->getPosLabel(), spheres.at(i)->getPosition());//create blanks to change the position of spheres,labels are "spherename+index+pos", array are from the classes, was storing the  position of sphere
+					ImGui::Text("      Red                 Green               Blue"); //some hardcoded text to make the context in window look neat
+					ImGui::InputFloat3(spheres.at(i)->getColorLabel(), spheres.at(i)->getColor());//create blanks to change the color of spheres,labels are "spherename+index+color", array are from the classes,was storing the color of sphere
+					ImGui::Text("                          Radius "); //some hardcoded text to make the context in window look neat
+					ImGui::InputFloat(spheres.at(i)->getSizeLabel(), spheres.at(i)->getSize());//create blanks to change the size of spheres,labels are "spherename+index+size", array are from the classes, was storing the size of sphere
 
+					ImGui::Text("========================================================"); //some hardcoded text to make the context in window look neat
 					ImGui::Text("========================================================");
+				}
+				ImGui::NewLine();//3 lines of nothing(white spaces) before going to next set of shapes
+				ImGui::NewLine();
+				ImGui::NewLine();
+
+				ImGui::Text("                          Lines");//some hardcoded text to make the context in window look neat,big seperatation from previous shapes
+				ImGui::Text("========================================================");
+				ImGui::Text("========================================================");
+				for (size_t i = 0; i < lines.size(); i++) {
+					ImGui::Text("                         ");//hardcoded spaces before the name of sphere, to make it look neat
+					ImGui::SameLine();//to make whatever context after the previous ones(hardcoded spaces) displayed on the same line with the previous text
+					ImGui::Text(lines.at(i)->getLabel());// label/name of lines
+					ImGui::Text("  StartX   StartY   StartZ    EndX      EndY      EndZ"); ///some hardcoded text to make the context in window look neat
+					ImGui::InputFloat6(lines.at(i)->getPosLabel(), lines.at(i)->getPosition());//create blanks to change the position of lines,labels are "linename+index+position", array are from the classes, was storing the starting and ending positions(basically 2 spots) of line
+					ImGui::Text("      Red                 Green               Blue");//some hardcoded text to make the context in window look neat
+					ImGui::InputFloat3(lines.at(i)->getColorLabel(), lines.at(i)->getColor());//create blanks to change the color of lines,labels are "linename+index+color", array are from the classes, was storing the color of line
+
+
+					ImGui::Text("========================================================");//some hardcoded text to make the context in window look neat
+					ImGui::Text("========================================================");
+				}
+				ImGui::NewLine();//3 lines of nothing(white spaces) before going to next set of shapes
+				ImGui::NewLine();
+				ImGui::NewLine();
+
+				ImGui::Text("                          Spots");//some hardcoded text to make the context in window look neat,big seperatation from previous shapes
+				ImGui::Text("========================================================");
+				ImGui::Text("========================================================");
+				for (size_t i = 0; i < spots.size(); i++) {
+					ImGui::Text("                         ");//hardcoded spaces before the name of sphere, to make it look neat
+					ImGui::SameLine();//to make whatever context after the previous ones(hardcoded spaces) displayed on the same line with the previous text
+					ImGui::Text(spots.at(i)->getLabel());// label/name of spots
+					ImGui::Text("      Xpos                Ypos                Zpos");//some hardcoded text to make the context in window look neat
+					ImGui::InputFloat3(spots.at(i)->getPosLabel(), spots.at(i)->getPosition());//create blanks to change the position of spots,labels are "spotname+index+pos", array are from the classes, was storing the  position of spot
+					ImGui::Text("      Red                 Green               Blue");//some hardcoded text to make the context in window look neat
+					ImGui::InputFloat3(spots.at(i)->getColorLabel(), spots.at(i)->getColor());//create blanks to change the color of spots,labels are "spotname+index+color", array are from the classes, was storing the color of spot
+					ImGui::Text("========================================================");//some hardcoded text to make the context in window look neat
 					ImGui::Text("========================================================");
 				}
 
-				ImGui::NewLine();
-				ImGui::NewLine();
-				ImGui::NewLine();
-				ImGui::Text("                          Spheres");
-				ImGui::Text("========================================================");
-				ImGui::Text("========================================================");
-				for (int i = 0; i < spheres.size(); i++) {
-					ImGui::Text("                         "); ImGui::SameLine();
-					ImGui::Text(spheres.at(i)->getstring());
-					ImGui::Text("      Xpos                Ypos                Zpos");
-					ImGui::InputFloat3(spheres.at(i)->getstringpos(), spheres.at(i)->getpos());
-					ImGui::Text("      Red                 Green               Blue");
-					ImGui::InputFloat3(spheres.at(i)->getstringcolor(), spheres.at(i)->getcolor());
-					ImGui::Text("                          Radius ");
-					ImGui::InputFloat(spheres.at(i)->getstringsize(), spheres.at(i)->getsize());
-
-					ImGui::Text("========================================================");
-					ImGui::Text("========================================================");
-				}
-				ImGui::NewLine();
-				ImGui::NewLine();
-				ImGui::NewLine();
-
-				ImGui::Text("                          Lines");
-				ImGui::Text("========================================================");
-				ImGui::Text("========================================================");
-				for (int i = 0; i < lines.size(); i++) {
-					ImGui::Text("                         ");
-					ImGui::SameLine();
-					ImGui::Text(lines.at(i)->getstring());
-					ImGui::Text("  StartX   StartY   StartZ    EndX      EndY      EndZ");
-					ImGui::InputFloat6(lines.at(i)->getstringpos(), lines.at(i)->getpos());
-					ImGui::Text("      Red                 Green               Blue");
-					ImGui::InputFloat3(lines.at(i)->getstringcolor(), lines.at(i)->getcolor());
-
-
-					ImGui::Text("========================================================");
-					ImGui::Text("========================================================");
-				}
-				ImGui::NewLine();
-				ImGui::NewLine();
-				ImGui::NewLine();
-
-				ImGui::Text("                          Spots");
-				ImGui::Text("========================================================");
-				ImGui::Text("========================================================");
-				for (int i = 0; i < spots.size(); i++) {
-					ImGui::Text("                         ");
-					ImGui::SameLine();
-					ImGui::Text(spots.at(i)->getstring());
-					ImGui::Text("      Xpos                Ypos                Zpos");
-					ImGui::InputFloat3(spots.at(i)->getstringpos(), spots.at(i)->getpos());
-					ImGui::Text("      Red                 Green               Blue");
-					ImGui::InputFloat3(spots.at(i)->getstringcolor(), spots.at(i)->getcolor());
-					ImGui::Text("========================================================");
-					ImGui::Text("========================================================");
-				}
 
 
 
-
-				if (ImGui::Button("Add Sphere")) {
-					++adspheresize;
-					string namba = to_string(adspheresize);
-					string1 += namba;
-					drawasphere *s = new drawasphere(.8f, .1f, .1f, 0, 0, -20, 1, 0, string1);
-					spheres.push_back(s);
-					string1 = "addsphere";
+				if (ImGui::Button("Add Sphere")) {//button for add another sphere, the code in brackets only runs (once) when the imgui button is pressed
+					++buttonAddedSphereCount;//add 1 to the integer counting numbers of spheres added through button,use this as the index
+					string indexNumber = to_string(buttonAddedSphereCount);//cast the integer to string
+					sphereLabelGeneral += indexNumber;//add the string and the hardcoded string"addsphere", make it addsphere+index
+					drawSphere *s = new drawSphere(.8f, .1f, .1f, 0, 0, -20, 1, 0, sphereLabelGeneral);//create new shape with these default values
+					spheres.push_back(s);//push the shape to the vector
+					sphereLabelGeneral = "addsphere";//change the string with index back to the original string
 
 				}
-				ImGui::SameLine();
-				if (ImGui::Button("Add Cube")) {
-					++adcubesize;
-					string namba = to_string(adcubesize);
-					string2 += namba;
-					drawacube *s = new drawacube(.8f, .1f, .1f, 0, 0, -20, 1, 0, string2);
-					cubes.push_back(s);
-					string2 = "addcube";
+				ImGui::SameLine();//make the next button to stay on same line
+				if (ImGui::Button("Add Cube")) {//button for add another cube, the code in brackets only runs (once) when the imgui button is pressed
+					++buttonAddedCubeCount;//add 1 to the integer counting numbers of cubes added through button,use this as the index
+					string indexNumber = to_string(buttonAddedCubeCount);//cast the integer to string
+					cubeLabelGeneral += indexNumber;//add the string and the hardcoded string"addcube", make it addcube+index
+					drawCube *s = new drawCube(.8f, .1f, .1f, 0, 0, -20, 1, 0, cubeLabelGeneral);//create new shape with these default values
+					cubes.push_back(s);//push the shape to the vector
+					cubeLabelGeneral = "addcube";//change the string with index back to the original string
 
 				}		ImGui::SameLine();
 				if (ImGui::Button("Add Lines")) {
-					++adlinesize;
-					string namba = to_string(adlinesize);
-					string3 += namba;
-					drawaline *s = new drawaline(.8f, 0, 0, 0, 1, -10, 10, 0, -10, 5.5, string3);
-					lines.push_back(s);
-					string3 = "addline";
+					++buttonAddedLineCount;//add 1 to the integer counting numbers of lines added through button,use this as the index
+					string indexNumber = to_string(buttonAddedLineCount);//cast the integer to string
+					lineLabelGeneral += indexNumber;//add the string and the hardcoded string"addline", make it addline+index
+					drawLine *s = new drawLine(.8f, 0, 0, 0, 1, -10, 10, 0, -10, 5.5, lineLabelGeneral);//create new shape with these default values
+					lines.push_back(s);//push the shape to the vector
+					lineLabelGeneral = "addline";//change the string with index back to the original string
 
 				}
 				ImGui::SameLine();
 				if (ImGui::Button("Add Spot")) {
-					++adspotsize;
-					string namba = to_string(adspotsize);
-					string4 += namba;
-					drawaspot *s = new drawaspot(.8f, .1f, .1f, -3, -1, -15, string4);
-					spots.push_back(s);
-					string4 = "addspot";
+					++buttonAddedSpotCount;//add 1 to the integer counting numbers of spots added through button,use this as the index
+					string indexNumber = to_string(buttonAddedSpotCount);//cast the integer to string
+					spotLabelGeneral += indexNumber;//add the string and the hardcoded string"addspot", make it addspot+index
+					drawSpot *s = new drawSpot(.8f, .1f, .1f, -3, -1, -15, spotLabelGeneral);//create new shape with these default values
+					spots.push_back(s);//push the shape to the vector
+					spotLabelGeneral = "addspot";//change the string with index back to the original string
 
 				}
-				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate); // frame rate of window, this line is still original from bitxues git, didnt delete this
 			
 			
 
 		
 			
-			ImGui::End();
+			ImGui::End();// end of this window, another window can begin from here
 
 			ImGui::Begin("Quest Manager window",&show_qgui);
 			qm.QuestGUI();
@@ -346,23 +381,23 @@ void Window::drawgui()
 
 void Window::storeVariables()
 {
-	stateposx = modpos[0];//store variables, this function is used when recording just starts
-	stateposz = modpos[2];
-	staterot = modrot;
+	startPosX = modelPosition[0];//store variables(currently only model position and rotation), this function is used when recording just starts
+	startPosZ = modelPosition[2];
+	startRotation = modelRotation;
 }
 
 void Window::playbackInit()
 {
 
-	modpos[0]=stateposx; //store variables, this function is used when recording just starts
-		modpos[2] = stateposz;
-	  modrot = staterot;
+	modelPosition[0]=startPosX; //store variables back, this function is used when playback just starts
+		modelPosition[2] = startPosZ;
+	  modelRotation = startRotation;
 }
 
 void Window::handleKeypress(unsigned char key, int x, int y) {
 	switch (key) {
 	case 27: //Escape key
-		cleanup();
+		cleanUp();
 		exit(0);
 	}
 }
@@ -416,28 +451,28 @@ void Window::handleResize(int x, int y) {
 	glMatrixMode(GL_MODELVIEW);
 	glViewport(0, 0, x, y);
 }
-void Window::initshapes()
+void Window::initShapes()
 {
-	
-	cb = new drawacube(0, .8f, 0, 0, 0, -20, 1, p3,"cube1");  // draw cube 
+	//pre made shapes, these shapes are in green
+	cb = new drawCube(0, .8f, 0, 0, 0, -20, 1, p3,"cube1"); 
 	cubes.push_back(cb);
-	a = new drawasphere(.1f, .8f, .1f, 1.5f, 0, -10, .5f, p,"sphere1");
+	a = new drawSphere(.1f, .8f, .1f, 1.5f, 0, -10, .5f, p,"sphere1");
 	spheres.push_back(a);
-    a1= new drawasphere(.1f, .8f, .1f, -1.5, 0, -10, .5f, p2, "sphere2");
+    a1= new drawSphere(.1f, .8f, .1f, -1.5, 0, -10, .5f, p2, "sphere2");
 	spheres.push_back(a1);
-	ln = new drawaline(.8f, .8f, .1f, 0, 0, -10, 5, 0, -10, 5.5, "line1");//draw line
+	ln = new drawLine(.8f, .8f, .1f, 0, 0, -10, 5, 0, -10, 5.5, "line1"); 
 	lines.push_back(ln);
-	spt = new drawaspot(.8f, .8f, .1f, -2, 1, -15, "spot1");//draw spot(lines)
+	spt = new drawSpot(.8f, .8f, .1f, -2, 1, -15, "spot1");
 	spots.push_back(spt);
 }
 
-void Window::debugdraw()
+void Window::debugDraw()
 {
 	 
-	for (int i = 0; i < spheres.size(); i++) { spheres.at(i)->draw(); }
-	for (int i = 0; i < cubes.size(); i++) { cubes.at(i)->draw(); }
-	for (int i = 0; i < lines.size(); i++) { lines.at(i)->draw(); }
-	for (int i = 0; i < spots.size(); i++) { spots.at(i)->draw(); }
+	for (size_t i = 0; i < spheres.size(); i++) { spheres.at(i)->draw(); }//loop through the vectors and draw all the shapes
+	for (size_t i = 0; i < cubes.size(); i++) { cubes.at(i)->draw(); }
+	for (size_t i = 0; i < lines.size(); i++) { lines.at(i)->draw(); }
+	for (size_t i = 0; i < spots.size(); i++) { spots.at(i)->draw(); }
  
 }
 void Window::drawScene() {
@@ -464,19 +499,19 @@ void Window::drawScene() {
 
  
 		glPushMatrix();
-		glTranslatef(modpos[0], modpos[1],modpos[2]);
+		glTranslatef(modelPosition[0], modelPosition[1],modelPosition[2]);//model translation from origin point(0,0,0 in this case, so basically its the position)
 		glScalef(0.5f, 0.5f, 0.5f);
 		glRotatef(-90.0f, 0.0f, 0, 1.0f);
-		glRotatef(modrot, 1.0f, 0.0, 0.0f);
+		glRotatef(modelRotation, 1.0f, 0.0, 0.0f);
 		glClearColor(0, 0, 0, 0);
 		_model->draw();
 		
 		glPopMatrix();
 	}
 
-	if (debug>0) {
-		debugdraw();
-		drawgui();
+	if (debugFlag>0) {
+		debugDraw();
+		drawGui();
 	}
 	glutSwapBuffers();
 }
@@ -511,16 +546,16 @@ void Window::Draw_Floor() {
 
 void Window::update() {
 	 
-	 if (GetAsyncKeyState(dbgdkey)&0x8000 &&dbgrls>0) {
+	 if (GetAsyncKeyState(dbgdkey)&0x8000 &&debugKeyRelease>0) {
 	
 		//key f7 as the key to toggle debug draw on/off
-		debug = -debug; //change the debug flag to opposite
-		dbgrls =-1;// set the flag for f7 release to -1 until release so no repeating
+		 debugFlag = -debugFlag; //change the debug Flag to opposite
+		debugKeyRelease =-1;// set the Flag for f7 release to -1 until release so no repeating
 
 	}
 	 else if (GetAsyncKeyState(dbgdkey) == 0) {
 	 
-		 dbgrls = 1; //
+		 debugKeyRelease = 1; //
 
 	 }
 	//Advance the animation
@@ -528,37 +563,37 @@ void Window::update() {
 
 		
 
-		if (GetAsyncKeyState(lft)||statea==3) { //if keys(wasd) pressed, change following rotation and position
+		if (GetAsyncKeyState(aKey)|| stateOfModelMovement ==3) { //if keys(wasd) pressed, or received keypressed message from server, change following rotation and position
 			_model->advance(.015f); // for playing for animation, controls time value in md2model(controls the play of animation...i didn't look in to how is it done originally was .025f, slowed it for a bit)
-			modpos[0] -= 0.1f;//move position(to left by 0.1f)
+			modelPosition[0] -= 0.1f;//move position(to left by 0.1f)
 			xminxx -= 0.1f;
 			xmaxxx -= 0.1f;
-			modrot = 90.0f; //x rotation value
+			modelRotation = 90.0f; //x rotation value
 		 
 		}
-		else if (GetAsyncKeyState(rgt)||statea==4) { // right
+		else if (GetAsyncKeyState(sKey)|| stateOfModelMovement ==4) { // right
 			_model->advance(.015f);
-			modpos[0] += 0.1f;
+			modelPosition[0] += 0.1f;
 			xminxx += 0.1f;
 			xmaxxx += 0.1f;
-			modrot = -90.0f;
+			modelRotation = -90.0f;
  
 
 		}
-		else if (GetAsyncKeyState(frt)||statea==2) {//s, backwards
+		else if (GetAsyncKeyState(wKey)|| stateOfModelMovement ==2) {//s, backwards
 			_model->advance(.015f);
-			modpos[2] += 0.1f;
+			modelPosition[2] += 0.1f;
 			zminzz += 0.1f;
 			zmaxzz += 0.1f;
-			modrot = 0.0f;
+			modelRotation = 0.0f;
 	 
 		}
-		else if (GetAsyncKeyState(bac)||statea==1) {//w, forward
+		else if (GetAsyncKeyState(sKey)|| stateOfModelMovement ==1) {//w, forward
 			_model->advance(.015f);
-			modpos[2] -= 0.1f;
+			modelPosition[2] -= 0.1f;
 			zminzz -= 0.1f;
 			zmaxzz -= 0.1f;
-			modrot = 180.0f;	 
+			modelRotation = 180.0f;	 
 		}
 		else  {
 			_model->setfm();
@@ -581,7 +616,7 @@ void Window::update() {
 
 
 void Window::Create_Window(int argv, char** argc ) {
-	initshapes();
+	initShapes();
 	glutInit(&argv, argc);
 	glutInitDisplayMode(  GLUT_DEPTH| GLUT_DOUBLE);
 	glutInitWindowSize(1600, 900);

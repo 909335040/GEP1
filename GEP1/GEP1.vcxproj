@@ -125,10 +125,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="drawacube.cpp" />
-    <ClCompile Include="drawaline.cpp" />
-    <ClCompile Include="drawasphere.cpp" />
-    <ClCompile Include="drawaspot.cpp" />
+    <ClCompile Include="drawCube.cpp" />
+    <ClCompile Include="drawLine.cpp" />
+    <ClCompile Include="drawSphere.cpp" />
+    <ClCompile Include="drawSpot.cpp" />
     <ClCompile Include="imageloader.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
@@ -141,10 +141,10 @@
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="drawacube.h" />
-    <ClInclude Include="drawaline.h" />
-    <ClInclude Include="drawasphere.h" />
-    <ClInclude Include="drawaspot.h" />
+    <ClInclude Include="drawCube.h" />
+    <ClInclude Include="drawLine.h" />
+    <ClInclude Include="drawSphere.h" />
+    <ClInclude Include="drawSpot.h" />
     <ClInclude Include="imageloader.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />

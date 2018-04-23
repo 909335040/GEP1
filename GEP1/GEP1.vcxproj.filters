@@ -30,18 +30,6 @@
     <ClCompile Include="md2model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="drawacube.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="drawaline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="drawasphere.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="drawaspot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="imgui_impl_glut.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -57,6 +45,18 @@
     <ClCompile Include="QuestManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="drawCube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="drawLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="drawSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="drawSpot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window.h">
@@ -69,18 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="md2model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="drawacube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="drawaline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="drawasphere.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="drawaspot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="imgui_impl_glut.h">
@@ -105,6 +93,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QuestManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="drawCube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="drawLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="drawSphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="drawSpot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

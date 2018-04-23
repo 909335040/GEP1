@@ -21,10 +21,10 @@ class Window {
 
 	
 public:
-	static void savestate(int a);
+	static void saveState(int a);
 	 
-	static void cleanup();
-	static void drawgui();
+	static void cleanUp();
+	static void drawGui();
 	static void storeVariables();
 	static void playbackInit();
 	static void handleKeypress(unsigned char key, int x, int y);
@@ -32,8 +32,8 @@ public:
 	static void initRendering();
 	static void handleResize(int w, int h);
 	static void update();	
-	static void initshapes();
-	static void debugdraw();
+	static void initShapes();
+	static void debugDraw();
 	static void Draw_Floor();
 	static void drawScene();
     
@@ -42,7 +42,7 @@ public:
 	static void InitRender();
  
  
-
+	  ~Window();
 };
 
 static float xminxx;

@@ -1,4 +1,8 @@
-﻿  main.cpp
-d:\users\user\documents\github\gep1\gep1\main.cpp(101): warning C4154: deletion of an array expression; conversion to pointer supplied
-d:\users\user\documents\github\gep1\gep1\main.cpp(189): warning C4018: '<': signed/unsigned mismatch
+﻿  window.cpp
+d:\users\user\documents\github\gep1\gep1\window.cpp(429): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\users\user\documents\github\gep1\gep1\window.cpp(431): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\users\user\documents\github\gep1\gep1\window.cpp(432): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\users\user\documents\github\gep1\gep1\window.cpp(433): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\users\user\documents\github\gep1\gep1\window.cpp(434): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\users\user\documents\github\gep1\gep1\window.cpp(435): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
   GEP1.vcxproj -> D:\Users\User\Documents\GitHub\GEP1\Debug\GEP1.exe
