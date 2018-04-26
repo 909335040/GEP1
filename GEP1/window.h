@@ -14,7 +14,7 @@
  
 #include <glm/glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
-
+#include "drawSphere.h"
 #include "imageloader.h"
 #include "md2model.h"
 class Window {
@@ -36,7 +36,8 @@ public:
 	static void debugDraw();
 	static void Draw_Floor();
 	static void drawScene();
-    
+	static vector4 returnModelData();
+	static void writeModelData(vector4 modData);
 	static void Create_Window(int argv,char** argc);
  
 	static void InitRender();

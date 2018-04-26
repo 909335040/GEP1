@@ -1,8 +1,12 @@
-﻿  window.cpp
-d:\users\user\documents\github\gep1\gep1\window.cpp(429): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-d:\users\user\documents\github\gep1\gep1\window.cpp(431): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+﻿  QuestManager.cpp
+d:\users\user\documents\github\gep1\gep1\questmanager.cpp(96): warning C4553: '==': operator has no effect; did you intend '='?
+  main.cpp
+  window.cpp
+d:\users\user\documents\github\gep1\gep1\window.cpp(430): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 d:\users\user\documents\github\gep1\gep1\window.cpp(432): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 d:\users\user\documents\github\gep1\gep1\window.cpp(433): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 d:\users\user\documents\github\gep1\gep1\window.cpp(434): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
 d:\users\user\documents\github\gep1\gep1\window.cpp(435): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+d:\users\user\documents\github\gep1\gep1\window.cpp(436): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  Generating Code...
   GEP1.vcxproj -> D:\Users\User\Documents\GitHub\GEP1\Debug\GEP1.exe
